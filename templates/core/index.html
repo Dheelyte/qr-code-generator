@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/2313/2313147.png" type="image/x-icon">
+    <style>
+        html {
+            background: url('https://img.freepik.com/free-vector/flat-vivid-modern-background_23-2148889928.jpg?w=826&t=st=1690783453~exp=1690784053~hmac=44dfe0ba48002e51906ca9bc0acbaed37571583e6a9a74167a8fc6ec0194b6a1') no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        body {
+            font-family: Verdana, 'Roboto', sans-serif, Monospace;
+        }
+        .header {
+            text-align: center;
+            color: #fff;
+            margin-top: 40px;
+        }
+        .header p {
+            color: orange;
+            font-size: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 70px;
+        }
+        .content {
+            position: relative;
+            width: 85%;
+            max-width: 350px;
+            background-color: #fff;
+            color: #797979;
+            padding: 40px;
+            border-radius: 10px;
+        }
+        .card {
+            color: #fff;
+            text-align: center;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        .success {
+            background-color: rgb(56, 184, 56);
+        }
+        .danger {
+            background-color: rgb(245, 72, 72);
+        }
+        .copied {
+            position: absolute;
+            top: 30px;
+            right: 20px;
+            background-color: #000;
+            color: #fff;
+            padding: 10px;
+            display: none;
+            font-size: 14px;
+        }
+        form input {
+            width: 100%;
+            border: 1px solid #d8d8d8;
+            outline: none;
+            margin: 15px 0 20px;
+            height: 40px;
+            border-radius: 5px;
+            display: block;
+            background-color: #f0f6ff;
+            box-sizing: border-box;
+            padding-left: 10px;
+        }
+        form input:focus:not([type="submit"]):not(:read-only) {
+            outline: 4px solid rgb(208, 161, 252);
+        }
+        form input[type="submit"] {
+            width: 100%;
+            cursor: pointer;
+            margin-bottom: 0;
+            background-color: orange;
+            border: 1px solid orange;
+            color: #fff;
+            font-weight: bold;
+        }
+        form input[type="submit"]:hover {
+            width: 100%;
+            cursor: pointer;
+            margin-bottom: 0;
+            background-color: rgb(235, 152, 0);
+            border: 1px solid orange;
+            color: #fff;
+            font-weight: bold;
+        }
+        .loading {
+            position: absolute;
+            bottom: 62px;
+            right: 70px;
+            font-size: xx-large;
+            color: #fff;
+            display: none;
+        }
+        .footer {
+            bottom: 20px;
+            position: absolute;
+            left: 50%;
+            margin-left: -95px;
+        }
+        .footer p {
+            text-align: center;
+            color: #fff;
+        }
+        .footer a {
+            color: #fff;
+            text-decoration: underline;
+        }
+        @media screen and (max-width: 490px) {
+            .content {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+        }
+        .modal {
+            /* position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            -webkit-transform: translate(-50%, -50%); */
+
+            width: 90%;
+            max-width: 400px;
+            box-sizing: border-box;
+            background-color: #fff;
+            border-radius: 10px;
+        }
+        .modal-body img {
+            width: 100%;
+        }
+        .modal-body {
+            padding: 20px;
+            border-bottom: 1px solid #949393;
+        }
+        .modal-header {
+            padding: 3px 15px;
+            border-bottom: 1px solid #949393;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: right;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .modal-footer .d-flex a {
+            padding: 10px;
+            background-color: tomato;
+            text-align: center;
+            border-radius: 3px;
+            text-decoration: none;
+            color: white;
+        }
+        .modal-footer .d-flex a:first-child {
+            background-color: slateblue;
+        }
+        .modal-footer .d-flex a:last-child {
+
+            background-color: gray;
+        }
+        .d-flex {
+            display: flex;
+            gap: 10px;
+        }
+        .types {
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+        .type {
+            padding: 7px 10px;
+            outline: 1px solid #d8d8d8;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .type img {
+            width: 15px;
+        }
+        .type:hover {
+            outline: 4px solid orange;
+        }
+        .modal-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(0, 0, 0, .8);
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <p>QGen</p>
+        <h1>QR Code Generator</h1>
+    </div>
+    <div class="container">
+        <div class="content">
+            <form id="submit">
+                <label for="types">Embed Type</label>
+                <div class="types d-flex">
+                    <div class="type">
+                        <img src="https://www.svgrepo.com/show/532866/link-alt.svg" alt="">
+                        Link
+                    </div>
+                    <div class="type">
+                        <img src="https://www.svgrepo.com/show/506800/burger-menu.svg" alt="">
+                        Text</div>
+                    <div class="type">
+                        <img src="https://www.svgrepo.com/show/152068/four-squares.svg" alt="">
+                        Other...</div>
+                </div>
+                <label for="embed-input">Embed Info</label>
+                <input type="text" id="embed-input" required>
+                
+                <input type="submit" value="Generate QR Code">
+                <span class="loading">...</span>
+            </form>
+        </div>
+    </div>
+    <div class="footer">
+        <p>Made with ❤ by <a href="https://twitter.com/DelightGbolahan">Delight</a></p>
+    </div>
+    <div class="modal-bg" id="modal-bg">
+        <div class="modal">
+            <div class="modal-header">
+                <p>Download QR Code</p>
+            </div>
+            <div class="modal-body">
+                <img src="" alt="">
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex">
+                    <a href="" class="download" id="download" download>Download</a>
+                    <a href="" class="close" id="close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        $('.type').click((e)=> {
+            $('.type').css('outline', '1px solid #d8d8d8')
+            $(e.currentTarget).css('outline', '4px solid orange')
+        })
+        $('#close').click((e) => {
+            e.preventDefault();
+            $('#modal-bg').hide()
+        })
+        $('#submit').submit(function(e){
+            e.preventDefault();
+            $('.loading').show()
+            $('.card').hide()
+            $.ajax({
+                type: 'POST',
+                url: '/',
+                data: {
+                    embed_data: $('#embed-input').val(),
+                },
+                success: function(response) {
+                    $('.loading').hide()
+                    $('.modal-body img').attr('src', response.generated_qr)
+                    $('#download').attr('href', response.generated_qr)
+                    $('#modal-bg').css('display', 'flex')
+                    $('#modal-bg').show()
+                    $('#submit').trigger("reset");
+                },
+                error: function(response) {
+                    $('.loading').hide()
+                    $('.content').prepend(`
+                        <div class="card danger">
+                            <p>${response.responseText}
+                            </p>
+                        </div>
+                    `);
+                }
+            })
+        })
+    </script>
+</body>
+</html>
