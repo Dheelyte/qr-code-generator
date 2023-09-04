@@ -2,6 +2,8 @@ asgiref==3.7.2
 colorama==0.4.6
 Django==4.2.4
 djangorestframework==3.14.0
+gunicorn==21.2.0
+packaging==23.1
 Pillow==10.0.0
 pypng==0.20220715.0
 pytz==2023.3
