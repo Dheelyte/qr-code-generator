@@ -1,0 +1,1 @@
+This folder should not be empty because QRs would be saved here.
